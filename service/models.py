@@ -353,8 +353,8 @@ class JSONFactory:
     #Added Code
     def address_validator(self):
         """
-        In this we are comparing the borrower and co-borrower residence addresses and create a new flag "shared_address" to indicate if they are the same.
-        We also remove residences that are redundant from the data based on the generated flag.
+        In this we are comparing the borrower and co-borrower residence addresses and create a new flag "shared_address" to indicate if they are the same ([FTR] CC-02).
+        We also remove residences that are redundant from the data based on the generated flag ([FTR] CC-01).
         """
         borrower = 0
         coborrower = 1
