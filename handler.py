@@ -48,6 +48,13 @@ def main(event, context=None):  # pylint: disable=unused-argument
     # Load all rules
     project = Project()
     rules = [rule for _ in project.resources.values() for rule in _]
+    
+    #Added new rule
+    rules.append({
+        "source": "$.reports[?(@.title == 'Borrowers Report')].shared_address",
+        "target": "$.reports[?(@.title == 'Borrowers Report')].shared_address"
+    })
+    
     logger.info('Service loaded rules: %s', json.dumps(rules, indent=2))
 
     # Confirm event is valid EventBridge -> SQS payload
