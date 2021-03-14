@@ -349,7 +349,32 @@ class JSONFactory:
     # Instance attributes
     def __init__(self, manifest: JSONManifest):
         self._manifest = manifest
+        
+    #Added Code
+    def address_validator(self):
+        """
+        In this we are comparing the borrower and co-borrower residence addresses and create a new flag "shared_address" to indicate if they are the same.
+        We also remove residences that are redundant from the data based on the generated flag.
+        """
+        borrower = 0
+        coborrower = 1
 
+        if self._manifest.items[f"$.reports[?(@.title == 'Residences Report')].residences[{borrower}].street"] == self._manifest.items[f"$.reports[?(@.title == 'Residences Report')].residences[{coborrower}].street"] and \
+            self._manifest.items[f"$.reports[?(@.title == 'Residences Report')].residences[{borrower}].city"] == self._manifest.items[f"$.reports[?(@.title == 'Residences Report')].residences[{coborrower}].city"] and \
+            self._manifest.items[f"$.reports[?(@.title == 'Residences Report')].residences[{borrower}].state"] == self._manifest.items[f"$.reports[?(@.title == 'Residences Report')].residences[{coborrower}].state"] and \
+            self._manifest.items[f"$.reports[?(@.title == 'Residences Report')].residences[{borrower}].zip"] == self._manifest.items[f"$.reports[?(@.title == 'Residences Report')].residences[{coborrower}].zip"]:
+            
+            self._manifest._fdata.__setitem__(f"$.reports[?(@.title == 'Borrowers Report')].shared_address", True)
+            
+            self._manifest._fdata.pop("$.applications[0].coborrower.mailingAddress.addressStreetLine1")
+            self._manifest._fdata.pop("$.applications[0].coborrower.mailingAddress.addressState")
+            self._manifest._fdata.pop("$.applications[0].coborrower.mailingAddress.addressPostalCode")
+            self._manifest._fdata.pop("$.applications[0].coborrower.mailingAddress.addressCity")
+
+        else:
+            self._manifest._fdata.__setitem__(f"$.reports[?(@.title == 'Borrowers Report')].shared_address", False)
+            
+            
     # Instance methods
     def get_projection(self):
         """Generate the projection for the given manifest.
@@ -361,6 +386,8 @@ class JSONFactory:
 
         """
         queries, record = [], {}
+        self.address_validator()
+
         for path, value in self._manifest:
 
             # Prioritize non-queries before queries
